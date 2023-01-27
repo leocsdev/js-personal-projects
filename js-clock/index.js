@@ -3,37 +3,41 @@
 const clockList = document.querySelector('.clock-list');
 const btnAddClock = document.querySelector('.btn-add-clock');
 
+let uniqueId = 0;
+
+//add 1 to uniqueID everytime the 'Add' button is clicked
+const addUniqueId = () => {
+  return uniqueId++;
+};
+
 btnAddClock.addEventListener('click', () => {
-  tick();
-  // setTimeout(tick, 1000);
+  addUniqueId();
+  addClockToList();
 });
 
-const tick = () => {
-  const now = new Date();
+// Add single clock to the list
+const addClockToList = () => {
+  const li = document.createElement('li');
+  li.classList.add('list-item');
+  li.id = `clock-${uniqueId}`;
+  clockList.appendChild(li);
 
+  setInterval(buildClock, 1000, uniqueId);
+};
+
+// Build the clock with unique ids
+const buildClock = (uniqueId) => {
+  const now = new Date();
   const hh = formatTo2Digits(now.getHours());
   const mm = formatTo2Digits(now.getMinutes());
   const ss = formatTo2Digits(now.getSeconds());
 
-  // // Update UI
-  // const html = `
-  //   <li class="clock-list-item">${hh}:${mm}:${ss}</li>
-  // `;
-
-  // clockList.innerHTML = html;
-  console.log(`${hh}:${mm}:${ss}`);
-  setTimeout(tick, 1000);
+  document.getElementById(`clock-${uniqueId}`).innerText = `${hh}:${mm}:${ss}`;
 };
 
 const formatTo2Digits = (num) => {
   return num.toString().padStart(2, '0');
 };
 
-// // Update every second
-// setInterval(tick, 1000);
-
-// tick();
-
 // check this article
-
 // https://stackoverflow.com/questions/66175847/create-multiple-clocks-in-a-generated-list-with-button-click-using-javascript
