@@ -2,6 +2,19 @@
 
 const clockList = document.querySelector('.clock-list');
 const btnAddClock = document.querySelector('.btn-add-clock');
+const timeZoneSelect = document.querySelector('#timezone');
+
+// Build select list with browser's built-in timezones
+const buildTimeZoneSelection = () => {
+  const timeZones = Intl.supportedValuesOf('timeZone');
+
+  timeZones.forEach((timeZone) => {
+    timeZoneSelect.innerHTML += `<option value='${timeZone}'>${timeZone}</option>`;
+  });
+};
+
+// Load time zone selection
+buildTimeZoneSelection();
 
 let uniqueId = 0;
 
@@ -22,22 +35,34 @@ const addClockToList = () => {
   li.id = `clock-${uniqueId}`;
   clockList.appendChild(li);
 
-  setInterval(buildClock, 1000, uniqueId);
+  // Get the timezone value from the timezone selection
+  const tz = timeZoneSelect.value;
+
+  // The tz and uniqueId ensures that each timezone instances
+  // will sync with its own timezone.
+  setInterval(buildClock, 1000, tz, uniqueId);
 };
 
 // Build the clock with unique ids
-const buildClock = (uniqueId) => {
+const buildClock = (tz, uniqueId) => {
+  // Get the current time
   const now = new Date();
-  const hh = formatTo2Digits(now.getHours());
-  const mm = formatTo2Digits(now.getMinutes());
-  const ss = formatTo2Digits(now.getSeconds());
+  // Convert the local time with the selected timezone
+  const convertedToTz = now.toLocaleString('en-US', {
+    timeZone: tz,
+  });
 
-  document.getElementById(`clock-${uniqueId}`).innerText = `${hh}:${mm}:${ss}`;
+  document.getElementById(
+    `clock-${uniqueId}`
+  ).innerText = `${convertedToTz} - ${tz}`;
 };
 
 const formatTo2Digits = (num) => {
   return num.toString().padStart(2, '0');
 };
 
-// check this article
+// References helped me to build this project:
+
 // https://stackoverflow.com/questions/66175847/create-multiple-clocks-in-a-generated-list-with-button-click-using-javascript
+
+// https://bobbyhadz.com/blog/javascript-convert-date-to-timezone
